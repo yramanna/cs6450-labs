@@ -27,8 +27,8 @@ func (s *Stats) Sub(prev *Stats) Stats {
 
 type KVService struct {
 	sync.Mutex
-	mp   map[string]string
-	stats Stats
+	mp        map[string]string
+	stats     Stats
 	prevStats Stats
 	lastPrint time.Time
 }
@@ -78,9 +78,9 @@ func (kv *KVService) printStats() {
 	deltaS := now.Sub(lastPrint).Seconds()
 
 	fmt.Printf("get/s %0.2f\nput/s %0.2f\nops/s %0.2f\n\n",
-		float64(diff.gets) / deltaS,
-		float64(diff.puts) / deltaS,
-		float64(diff.gets + diff.puts) / deltaS)
+		float64(diff.gets)/deltaS,
+		float64(diff.puts)/deltaS,
+		float64(diff.gets+diff.puts)/deltaS)
 }
 
 func main() {
