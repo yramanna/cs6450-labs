@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/rpc"
+	"strings"
 	"sync/atomic"
 	"time"
 
@@ -52,7 +53,7 @@ func (client *Client) Put(key string, value string) {
 func runClient(id int, addr string, done *atomic.Bool, workload *kvs.Workload, resultsCh chan<- uint64) {
 	client := Dial(addr)
 
-	// XXXXXXXXXXXXXX make correct len value
+	value := strings.Repeat("x", 128)
 	const batchSize = 1024
 
 	opsCompleted := uint64(0)
@@ -64,8 +65,7 @@ func runClient(id int, addr string, done *atomic.Bool, workload *kvs.Workload, r
 			if op.IsRead {
 				client.Get(key)
 			} else {
-				// XXXXXXXXXXXX
-				client.Put(key, key)
+				client.Put(key, value)
 			}
 			opsCompleted++
 		}
