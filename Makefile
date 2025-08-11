@@ -4,8 +4,8 @@
 MODULE_NAME := github.com/rstutsman/cs6450-labs
 BIN_DIR := bin
 LOG_DIR := $(CURDIR)/logs
-SERVER_BINARY := $(BIN_DIR)/server
-CLIENT_BINARY := $(BIN_DIR)/client
+SERVER_BINARY := $(BIN_DIR)/kvsserver
+CLIENT_BINARY := $(BIN_DIR)/kvsclient
 SERVER_PKG := ./kvs/server
 CLIENT_PKG := ./kvs/client
 
