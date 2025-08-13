@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # Configuration
-ROOT="/mnt/nfs/cs6450-labs"
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 LOG_ROOT="${ROOT}/logs"
 SERVER_NODES=("node0" "node1")  # Edit as needed
 CLIENT_NODES=("node2" "node3")  # Edit as needed
