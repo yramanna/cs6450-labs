@@ -70,18 +70,5 @@ echo "Run complete. Logs in $LOG_DIR"
 echo
 
 # Calculate and display median ops/s from server logs
-for node in "${SERVER_NODES[@]}"; do
-    if [[ -f "$LOG_DIR/kvsserver-$node.log" ]]; then
-        echo "Results for server on $node:"
-        awk '/ops\/s / { a[NR] = $2 }
-            END {
-                if (NR == 0) { print "No ops/s data found"; exit }
-                n = asort(a)
-                if (n % 2)
-                    print "median op/s " a[(n+1)/2]
-                else
-                    print "median op/s " (a[n/2] + a[n/2+1]) / 2
-            }' < "$LOG_DIR/kvsserver-$node.log"
-    fi
-done
-
+python3 report-tput.py
+echo
