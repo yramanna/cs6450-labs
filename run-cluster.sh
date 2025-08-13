@@ -7,6 +7,9 @@ LOG_ROOT="${ROOT}/logs"
 SERVER_NODES=("node0" "node1")  # Edit as needed
 CLIENT_NODES=("node2" "node3")  # Edit as needed
 
+SSH_OPTS="-o StrictHostKeyChecking=no"
+SSH="ssh ${SSH_OPTS}"
+
 # Timestamped log directory
 TS=$(date +"%Y%m%d-%H%M%S")
 LOG_DIR="$LOG_ROOT/$TS"
@@ -20,7 +23,7 @@ cleanup() {
     echo "Cleaning up processes on all nodes..."
     for node in "${SERVER_NODES[@]}" "${CLIENT_NODES[@]}"; do
         echo "Cleaning up processes on $node..."
-        ssh $node "pkill -f 'kvs(server|client)' || true" 2>/dev/null || true
+        ${SSH} $node "pkill -f 'kvs(server|client)' || true" 2>/dev/null || true
     done
     echo "Cleanup complete."
     echo
@@ -40,7 +43,7 @@ echo
 # Start servers
 for node in "${SERVER_NODES[@]}"; do
     echo "Starting server on $node..."
-    ssh $node "${ROOT}/bin/kvsserver > \"$LOG_DIR/kvsserver-$node.log\" 2>&1 &"
+    ${SSH} $node "${ROOT}/bin/kvsserver > \"$LOG_DIR/kvsserver-$node.log\" 2>&1 &"
 done
 
 # Give servers time to start
@@ -53,7 +56,7 @@ for node in "${CLIENT_NODES[@]}"; do
     echo "Starting client on $node..."
     # Use a marker in the command line to make it easier to identify and wait for
     CLIENT_MARKER="kvsclient-run-$TS-$node"
-    ssh $node "exec -a '$CLIENT_MARKER' ${ROOT}/bin/kvsclient -host $SERVER_NODE > \"$LOG_DIR/kvsclient-$node.log\" 2>&1" &
+    ${SSH} $node "exec -a '$CLIENT_MARKER' ${ROOT}/bin/kvsclient -host $SERVER_NODE > \"$LOG_DIR/kvsclient-$node.log\" 2>&1" &
     CLIENT_PIDS+=($!)
 done
 
