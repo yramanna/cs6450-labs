@@ -1,3 +1,3 @@
 module github.com/rstutsman/cs6450-labs
 
-go 1.22
+go 1.25
