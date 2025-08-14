@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+
+# Extracts throughputs and summarizes them from a set of kvs server logs.
+# Mostly thrown together with Claude from a draft awk script.
+
 import os
 import glob
 import statistics
@@ -8,7 +12,7 @@ LOG_DIR = "./logs/latest"
 total_throughput = 0.0
 
 # Find all matching log files
-log_files = glob.glob(os.path.join(LOG_DIR, "kvsserver-*.log"))
+log_files = sorted(glob.glob(os.path.join(LOG_DIR, "kvsserver-*.log")))
 
 if not log_files:
     print("No matching log files found.")
