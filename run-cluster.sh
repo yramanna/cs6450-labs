@@ -23,6 +23,15 @@ usage() {
     exit 1
 }
 
+# Check for help options
+for arg in "$@"; do
+    case "$arg" in
+        help|-h|--help|-help)
+            usage
+            ;;
+    esac
+done
+
 # Check command line arguments
 if [ "$#" -gt 4 ]; then
     echo "Error: Too many arguments"
