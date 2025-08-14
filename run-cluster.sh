@@ -169,13 +169,22 @@ done
 sleep 2
 
 # Start clients with a unique marker for identification
-SERVER_NODE="${SERVER_NODES[0]}"  # Use the first server node as the host for clients
+# Build comma-separated list of server hosts with port 8080
+SERVER_HOSTS=""
+for node in "${SERVER_NODES[@]}"; do
+    if [ -n "$SERVER_HOSTS" ]; then
+        SERVER_HOSTS="$SERVER_HOSTS,$node:8080"
+    else
+        SERVER_HOSTS="$node:8080"
+    fi
+done
+
 CLIENT_PIDS=()
 for node in "${CLIENT_NODES[@]}"; do
     echo "Starting client on $node..."
     # Use a marker in the command line to make it easier to identify and wait for
     CLIENT_MARKER="kvsclient-run-$TS-$node"
-    ${SSH} $node "exec -a '$CLIENT_MARKER' ${ROOT}/bin/kvsclient -host $SERVER_NODE $CLIENT_ARGS > \"$LOG_DIR/kvsclient-$node.log\" 2>&1" &
+    ${SSH} $node "exec -a '$CLIENT_MARKER' ${ROOT}/bin/kvsclient -hosts $SERVER_HOSTS $CLIENT_ARGS > \"$LOG_DIR/kvsclient-$node.log\" 2>&1" &
     CLIENT_PIDS+=($!)
 done
 

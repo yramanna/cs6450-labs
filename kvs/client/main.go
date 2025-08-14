@@ -76,21 +76,36 @@ func runClient(id int, addr string, done *atomic.Bool, workload *kvs.Workload, r
 	resultsCh <- opsCompleted
 }
 
+type HostList []string
+
+func (h *HostList) String() string {
+	return strings.Join(*h, ",")
+}
+
+func (h *HostList) Set(value string) error {
+	*h = strings.Split(value, ",")
+	return nil
+}
+
 func main() {
-	host := flag.String("host", "localhost", "Host to connect to")
-	port := flag.String("port", "8080", "Port to connect to")
+	hosts := HostList{}
+
+	flag.Var(&hosts, "hosts", "Comma-separated list of host:ports to connect to")
 	theta := flag.Float64("theta", 0.99, "Zipfian distribution skew parameter")
 	workload := flag.String("workload", "YCSB-B", "Workload type (YCSB-A, YCSB-B, YCSB-C)")
 	secs := flag.Int("secs", 30, "Duration in seconds for each client to run")
 	flag.Parse()
 
-	addr := fmt.Sprintf("%v:%v", *host, *port)
+	if len(hosts) == 0 {
+		hosts = append(hosts, "localhost:8080")
+	}
+
 	fmt.Printf(
-		"server %v\n"+
+		"hosts %v\n"+
 			"theta %.2f\n"+
 			"workload %s\n"+
 			"secs %d\n",
-		addr, *theta, *workload, *secs,
+		hosts, *theta, *workload, *secs,
 	)
 
 	start := time.Now()
@@ -98,10 +113,11 @@ func main() {
 	done := atomic.Bool{}
 	resultsCh := make(chan uint64)
 
+	host := hosts[0]
 	clientId := 0
 	go func(clientId int) {
 		workload := kvs.NewWorkload(*workload, *theta)
-		runClient(clientId, addr, &done, workload, resultsCh)
+		runClient(clientId, host, &done, workload, resultsCh)
 	}(clientId)
 
 	time.Sleep(time.Duration(*secs) * time.Second)
